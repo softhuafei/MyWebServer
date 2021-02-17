@@ -49,6 +49,37 @@ public:
 
     void init();
     HTTP_CODE parse(Buffer &buffer);
+    
+    bool isKeepAlive() const 
+    {
+        return m_linger;
+    }
+
+    std::string getHost() const
+    {
+        return m_host;
+    }
+
+    std::string getUrl() const
+    {
+        return m_url;
+    }
+
+    METHOD getMethod() const
+    {
+        return m_method;
+    }
+
+    std::string getVersion() const
+    {
+        return m_version;
+    }
+
+    std::string getContent() const
+    {
+        return m_content;
+    }
+
 
 private:
     
