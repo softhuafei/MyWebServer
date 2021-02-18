@@ -45,8 +45,9 @@ public:
         PATH
     };
 
-    HttpRequest() { init(); }
+    HttpRequest();
 
+    /* 初始化请求解析类，清空各个字段、重置解析状态为 请求行*/
     void init();
     HTTP_CODE parse(Buffer &buffer);
     
@@ -86,8 +87,6 @@ private:
     HTTP_CODE parse_request_line(const std::string &text);
     HTTP_CODE parse_headers(const std::string &text);
     HTTP_CODE parse_content(const std::string &text);
-    
-
     
     CHECK_STATE m_check_state;
     HTTP_CODE m_http_code;

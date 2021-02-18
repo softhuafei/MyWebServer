@@ -5,6 +5,10 @@
 #include "../http/HttpRequest.h"
 
 
+HttpRequest::HttpRequest()
+{
+    init();
+}
 
 void HttpRequest::init() 
 {
@@ -69,13 +73,16 @@ HttpRequest::HTTP_CODE HttpRequest::parse(Buffer &buffer)
         case CHECK_STATE_CONTENT:
         {
             ret = parse_content(text);
-            return ret;
-        }
-        default:
+            if (ret == GET_REQUEST)
+                return ret;
+            m_check_state = CHECK_STATE_FINISH;
             break;
         }
-
+        default:
+            return INTERNAL_ERROR;
+        }
     }
+    return NO_REQUEST;
 }
 
 HttpRequest::HTTP_CODE HttpRequest::parse_request_line(const std::string &line)
@@ -171,7 +178,6 @@ HttpRequest::HTTP_CODE HttpRequest::parse_content(const std::string &text)
     {
         /* POST请求中最后输入的是用户名和密码 */
         m_content = text;
-        m_check_state = CHECK_STATE_FINISH;
         return GET_REQUEST;
     }
 
