@@ -182,7 +182,7 @@ bool WebServer::dealConn()
     /* 初始化连接 */
     m_users[connfd].init(connfd, client_addr);
 
-    std::cout << "new conn coming, init httpConn done" << std::endl;
+    // std::cout << "new conn coming, init httpConn done" << std::endl;
     return true;
 }
 
@@ -218,10 +218,10 @@ bool WebServer::dealwithsignal(bool &timeout, bool& stop_server)
 
 void WebServer::dealwithread(int sockfd)
 {
-    std::cout << "sockfd" << sockfd << " coming data, reading" << std::endl;
+    // std::cout << "sockfd" << sockfd << " coming data, reading" << std::endl;
     if (m_users[sockfd].read())
     {
-        printf("read from with the client(%s)\n", inet_ntoa(m_users[sockfd].get_address()->sin_addr));
+        // printf("read from with the client(%s)\n", inet_ntoa(m_users[sockfd].get_address()->sin_addr));
         /* 成功读取请求对象，将请求放入工作队列 */
         m_threadpool->append(&m_users[sockfd]);
     }
@@ -236,7 +236,8 @@ void WebServer::dealwithwrite(int sockfd)
 {
     if (m_users[sockfd].write())
     {
-        printf("send data to the client(%s)\n", inet_ntoa(m_users[sockfd].get_address()->sin_addr));
+        // printf("send data to the client(%s)\n", inet_ntoa(m_users[sockfd].get_address()->sin_addr));
+        
     }
     else
     {
