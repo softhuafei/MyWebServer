@@ -1,4 +1,5 @@
-#pragma once
+#ifndef HTTPREQUEST_H
+#define HTTPREQUEST_H
 
 #include <string>
 #include "../buffer/Buffer.h"
@@ -97,8 +98,10 @@ private:
     std::string m_version;
     /* 请求头 */
     std::string m_host;
-    int m_content_length;
+    size_t m_content_length;
     bool m_linger;
     /* 请求正文 */
     std::string m_content;
 };
+
+#endif

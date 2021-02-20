@@ -1,4 +1,7 @@
-#pragma once
+#ifndef WebServer_H
+#define WebServer_H
+
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -14,10 +17,11 @@
 #include <memory>
 #include <memory.h>
 #include <signal.h>
+#include <iostream>
 
-#include "threadpool/Threadpool.h"
-#include "http/HttpConn.h"
-#include "util/util.h"
+#include "../threadpool/Threadpool.h"
+#include "../http/HttpConn.h"
+#include "../util/util.h"
 
 const int MAX_FD = 65536;           //最大文件描述符
 const int MAX_EVENT_NUMBER = 10000; //最大事件数
@@ -72,3 +76,5 @@ private:
 
 
 };
+
+#endif

@@ -10,6 +10,7 @@ WebServer::WebServer(): m_users(MAX_FD)
     getcwd(server_path, 200);
     m_root = server_path;
     m_root += "/root";
+    HttpResponse::m_root = m_root;
 }
 
 WebServer::~WebServer()
@@ -27,6 +28,9 @@ void WebServer::init(int port, int thread_num, int opt_linger)
     m_OPT_LINGER = opt_linger;
 
     m_threadpool = std::make_unique<Threadpool>(thread_num);
+
+    std::cout << "webServer init() done" << std::endl;
+    std::cout << "port :" << std::to_string(m_port) << std::endl;
 }
 
 
@@ -176,7 +180,9 @@ bool WebServer::dealConn()
     }
 
     /* 初始化连接 */
-    m_users[connfd].init(connfd, client_addr, m_root);
+    m_users[connfd].init(connfd, client_addr);
+
+    std::cout << "new conn coming, init httpConn done" << std::endl;
     return true;
 }
 
@@ -212,9 +218,10 @@ bool WebServer::dealwithsignal(bool &timeout, bool& stop_server)
 
 void WebServer::dealwithread(int sockfd)
 {
+    std::cout << "sockfd" << sockfd << " coming data, reading" << std::endl;
     if (m_users[sockfd].read())
     {
-        printf("read from with the client(%s)", inet_ntoa(m_users[sockfd].get_address()->sin_addr));
+        printf("read from with the client(%s)\n", inet_ntoa(m_users[sockfd].get_address()->sin_addr));
         /* 成功读取请求对象，将请求放入工作队列 */
         m_threadpool->append(&m_users[sockfd]);
     }
@@ -229,7 +236,7 @@ void WebServer::dealwithwrite(int sockfd)
 {
     if (m_users[sockfd].write())
     {
-        printf("send data to the client(%s)", inet_ntoa(m_users[sockfd].get_address()->sin_addr));
+        printf("send data to the client(%s)\n", inet_ntoa(m_users[sockfd].get_address()->sin_addr));
     }
     else
     {

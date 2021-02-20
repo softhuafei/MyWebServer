@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BUFFER_H
+#define BUFFER_H
 
 #include <vector>
 #include <string>
@@ -159,4 +160,7 @@ private:
 
     static const char kCRLF[];  /* 回车换行符 */
 };
+
+
+#endif
 

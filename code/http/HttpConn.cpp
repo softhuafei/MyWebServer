@@ -5,11 +5,10 @@
 int HttpConn::m_epollfd = -1;
 int HttpConn::m_user_count = 0;
 
-void HttpConn::init(int socket, const sockaddr_in &addr, const std::string &root)
+void HttpConn::init(int socket, const sockaddr_in &addr)
 {
     m_fd = socket;
     m_addr = addr;
-    m_root = root;
 
     m_iov_cnt = 0;
     m_bytes_to_send = 0;
@@ -47,7 +46,15 @@ void HttpConn::close_conn()
 
 void HttpConn::process()
 {
+    std::cout << "HttpConn process" << std::endl;
+    std::cout << "HttpConn read_buff" << std::endl;
+    std::cout << std::string(m_reader_buff.peek(), m_reader_buff.readableBytes());
+
     HttpRequest::HTTP_CODE ret = m_request.parse(m_reader_buff);
+
+    std::cout << "request parse result\n";
+    std::cout << "Url: " << m_request.getUrl() << std::endl; 
+
     /* 不是一个完整的请求 */
     if (ret == HttpRequest::NO_REQUEST)
     {
@@ -56,21 +63,23 @@ void HttpConn::process()
         return;
     }
 
+    std::cout << "Init response" << std::endl;
     /* 初始化HttpResponse， 设置所需信息*/
-    m_response.init(m_root, m_request.getUrl(), m_request.isKeepAlive(), ret);
+    m_response.init(m_request.getUrl(), m_request.isKeepAlive(), ret);
     
     /* 构造响应 */
+    std::cout << "make response" << std::endl;
     bool write_ret = m_response.process_response(m_write_buff);
     /* 写buffer空间不够,无法解决，只能关闭连接，一般不会出现这种情况 */
     if (!write_ret)
     {
         close_conn();
         return;
-    } 
+    }
 
     /* 响应状态行 */
     m_iov[0].iov_base = const_cast<char*>(m_write_buff.peek());
-    m_iov[1].iov_len = m_write_buff.readableBytes();
+    m_iov[0].iov_len = m_write_buff.readableBytes();
     m_iov_cnt = 1;
     m_bytes_to_send = m_write_buff.readableBytes();
 
@@ -83,6 +92,9 @@ void HttpConn::process()
         m_bytes_to_send += m_response.file_len();
     }
 
+    std::cout << "write Buff" << std::endl;
+    std::cout << std::string(static_cast<char*>(m_iov[0].iov_base), m_iov[0].iov_len) << std::endl;
+    std::cout << std::string(static_cast<char*>(m_iov[1].iov_base), m_iov[1].iov_len) << std::endl;
 
     modfd(m_epollfd, m_fd, EPOLLOUT, 1);
 }
@@ -114,6 +126,8 @@ bool HttpConn::write()
     int temp = 0;
     while (1)
     {
+        std::cout << "m_bytes_have_send： " << m_bytes_have_send << std::endl;
+        std::cout << "m_bytes_to_send: " << m_bytes_to_send << std::endl;
         temp = writev(m_fd, m_iov, m_iov_cnt);
         if (temp < 0)
         {

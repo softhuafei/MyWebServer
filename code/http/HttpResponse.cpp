@@ -16,6 +16,8 @@ const std::unordered_map<int, std::string> HttpResponse::CODE_FORM = {
     { 500, "There was an unusual problem serving the request file.\n" } 
 };
 
+std::string HttpResponse::m_root;
+
 HttpResponse::HttpResponse()
 {
     m_root = "";
@@ -32,10 +34,8 @@ HttpResponse::~HttpResponse()
     unmap();
 }
 
-void HttpResponse::init(const std::string &root, const std::string &url, bool isKeepAlive, HttpRequest::HTTP_CODE code)
+void HttpResponse::init(const std::string &url, bool isKeepAlive, HttpRequest::HTTP_CODE code)
 {
-    assert(m_root != "");
-    m_root = root;
     m_url = url;
     m_linger = isKeepAlive;
     m_http_code = code;

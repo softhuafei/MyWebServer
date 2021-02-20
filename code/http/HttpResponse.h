@@ -1,11 +1,13 @@
-#pragma once
+#ifndef HTTPRESPONSE_H
+#define HTTPRESPONSE_H
+
 #include <string>
 #include <sys/stat.h>    // stat
 #include <fcntl.h>       // open
 #include <unistd.h>      // close
 #include <sys/mman.h>    // mmap, munmap
 #include <unordered_map>
-#include "./HttpRequest.h"
+#include "../http/HttpRequest.h"
 #include "../buffer/Buffer.h"
 class HttpResponse
 {
@@ -13,7 +15,7 @@ public:
     HttpResponse();
     ~HttpResponse();
 
-    void init(const std::string &root, const std::string &url, bool isKeepAlive, HttpRequest::HTTP_CODE code);
+    void init(const std::string &url, bool isKeepAlive, HttpRequest::HTTP_CODE code);
 
     bool process_response(Buffer &buff);
 
@@ -38,7 +40,6 @@ private:
 private:
     /* 构造response所需要的信息 */
     HttpRequest::HTTP_CODE m_http_code;
-    std::string m_root;
     std::string m_url;
     std::string m_real_file;
     bool m_linger;
@@ -52,4 +53,9 @@ private:
 
     /* 除200外的状态码对应的content */
     static const std::unordered_map<int, std::string> CODE_FORM;
+
+public:
+    static std::string m_root;
 };
+
+#endif

@@ -1,15 +1,18 @@
-#pragma once
+#ifndef HTTPCONN_H
+#define HTTPCONN_H
+
 #include <arpa/inet.h>   // sockaddr_in
 #include <sys/uio.h>     // readv/writev
 #include <string>
+#include <iostream>
 #include "../buffer/Buffer.h"
-#include "./HttpRequest.h"
-#include "./HttpResponse.h"
+#include "../http/HttpRequest.h"
+#include "../http/HttpResponse.h"
 
 class HttpConn {
 public:
     /* 初始化新接受的连接 */
-    void init(int socket, const sockaddr_in &addr, const std::string &root);
+    void init(int socket, const sockaddr_in &addr);
 
     void close_conn();
     /* 解析请求并构造返回， threadpool调用 */
@@ -34,11 +37,9 @@ public:
     static int m_epollfd;
     static int m_user_count;
 
-
 private:
     int m_fd;
     sockaddr_in m_addr;
-    std::string m_root;
 
 
     /* 被write使用，用于分散读 */
@@ -55,3 +56,4 @@ private:
 };
 
 
+#endif
