@@ -21,8 +21,6 @@ void HttpConn::init(int socket, const sockaddr_in &addr, const std::string &root
     /* 清空buffer */
     m_write_buff.retrieveAll();
     m_reader_buff.retrieveAll();
-
-    /* 初始化httpRequest, HttpResponse, 由各自的默认构造函数完成*/
 }
 
 void HttpConn::init()
@@ -98,7 +96,10 @@ bool HttpConn::read()
 }
 
 
-/* 通过分散写 发送数据到客户端 */
+/* 通过分散写 发送数据到客户端 
+    false: 表示关闭连接
+    true: 表示保持连接
+*/
 bool HttpConn::write()
 {
     //若要发送的数据长度为0

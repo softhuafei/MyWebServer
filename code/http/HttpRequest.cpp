@@ -177,7 +177,7 @@ HttpRequest::HTTP_CODE HttpRequest::parse_content(const std::string &text)
     if (text.size() >= m_content_length)
     {
         /* POST请求中最后输入的是用户名和密码 */
-        m_content = text;
+        m_content = text.substr(0, m_content_length);
         return GET_REQUEST;
     }
 

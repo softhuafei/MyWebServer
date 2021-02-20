@@ -5,9 +5,8 @@
 #include<deque>
 #include<vector>
 #include<pthread.h>     // pthread
-#include<memory>        // std::shared_ptr
 #include<exception>     // throw std::exception
-#include "../http/httpConn.h"
+#include "../http/HttpConn.h"
 #include "../lock/Locker.h"
 
 
@@ -18,7 +17,7 @@ public:
     ~Threadpool() = default;
 
     /* 将任务放入任务队列 */ 
-    bool append(std::shared_ptr<httpConn> conn);
+    bool append(HttpConn *conn);
 
 private:
     /* 线程函数， 因为普通成员函数带有this参数，不符合pthread_create的参数形式，因此要
@@ -34,7 +33,7 @@ private:
     int m_thread_number;
     /* 队列所能容纳的最大任务数 */                
     int m_max_requests;
-    std::deque<std::shared_ptr<httpConn>> m_tasks;
+    std::deque<HttpConn*> m_tasks;
     std::vector<pthread_t> m_threads;
 
     /* 用于同步工作队列的信号量和互斥锁 */
@@ -42,7 +41,7 @@ private:
     Locker m_locker;
 };
 
-Threadpool::Threadpool(int thread_number=8, int max_requests=10000): \
+Threadpool::Threadpool(int thread_number/*=8*/, int max_requests/*=10000*/): \
  m_thread_number(thread_number), m_max_requests(max_requests), m_threads(thread_number) 
  {
     if (thread_number <= 0 || max_requests <= 0) 
@@ -67,7 +66,7 @@ Threadpool::Threadpool(int thread_number=8, int max_requests=10000): \
     /* 初始化线程同步机制类(由sem、locker的默认构造函数完成) */
 }
 
-bool Threadpool::append(std::shared_ptr<httpConn> conn) 
+bool Threadpool::append(HttpConn *conn) 
 {
     m_locker.lock();
     if (m_tasks.size() >= m_max_requests) 
@@ -103,7 +102,7 @@ void Threadpool::run()
         }
 
         /* 从队列中取出任务 */
-        std::shared_ptr<httpConn> task = m_tasks.front();
+        HttpConn* task = m_tasks.front();
         m_tasks.pop_front();
 
         /* 解锁 */

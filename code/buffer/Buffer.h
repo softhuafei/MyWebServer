@@ -93,6 +93,7 @@ public:
     {
         std::string ret(peek(), readableBytes());
         retrieveAll();
+        return ret;
     }
 
     std::string retrieveAsString(size_t len) 
@@ -127,6 +128,7 @@ public:
             return false;
         std::copy(str, str + len, beginWrite());
         hasWritten(len);
+        return true;
     }
     bool append(const std::string& str)
     {

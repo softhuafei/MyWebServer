@@ -44,8 +44,8 @@ private:
     /* 被write使用，用于分散读 */
     int m_iov_cnt;
     struct iovec m_iov[2];
-    int m_bytes_to_send;
-    int m_bytes_have_send;
+    size_t m_bytes_to_send;
+    size_t m_bytes_have_send;
 
     Buffer m_reader_buff;
     Buffer m_write_buff;
