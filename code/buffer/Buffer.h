@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BUFFER_H
+#define BUFFER_H
 
 #include <vector>
 #include <string>
@@ -93,6 +94,7 @@ public:
     {
         std::string ret(peek(), readableBytes());
         retrieveAll();
+        return ret;
     }
 
     std::string retrieveAsString(size_t len) 
@@ -102,8 +104,6 @@ public:
         retrieve(len);
         return ret;
     }
-
-
 
 
     /* 返回写指针，指向可写区域的第一个字符 */
@@ -117,6 +117,24 @@ public:
         return begin() + m_writerIndex; 
     }
 
+    void hasWritten(size_t len) {
+        m_writerIndex += len;
+    } 
+
+    /* 向buffer写入内容 */
+    bool append(const char* str, size_t len) 
+    {
+        assert(str);
+        if (len > writableBytes())
+            return false;
+        std::copy(str, str + len, beginWrite());
+        hasWritten(len);
+        return true;
+    }
+    bool append(const std::string& str)
+    {
+        return append(str.data(), str.length());
+    }
 
     /* 基于ET模式的读，将fd的内容读入buffer，直到遇到EAGAIN
     * @return if read success, @c errno is saved */ 
@@ -142,4 +160,7 @@ private:
 
     static const char kCRLF[];  /* 回车换行符 */
 };
+
+
+#endif
 

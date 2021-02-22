@@ -1,4 +1,5 @@
-#pragma once
+#ifndef HTTPREQUEST_H
+#define HTTPREQUEST_H
 
 #include <string>
 #include "../buffer/Buffer.h"
@@ -45,18 +46,48 @@ public:
         PATH
     };
 
-    HttpRequest() { init(); }
+    HttpRequest();
 
+    /* 初始化请求解析类，清空各个字段、重置解析状态为 请求行*/
     void init();
     HTTP_CODE parse(Buffer &buffer);
+    
+    bool isKeepAlive() const 
+    {
+        return m_linger;
+    }
+
+    std::string getHost() const
+    {
+        return m_host;
+    }
+
+    std::string getUrl() const
+    {
+        return m_url;
+    }
+
+    METHOD getMethod() const
+    {
+        return m_method;
+    }
+
+    std::string getVersion() const
+    {
+        return m_version;
+    }
+
+    std::string getContent() const
+    {
+        return m_content;
+    }
+
 
 private:
     
     HTTP_CODE parse_request_line(const std::string &text);
     HTTP_CODE parse_headers(const std::string &text);
     HTTP_CODE parse_content(const std::string &text);
-    
-
     
     CHECK_STATE m_check_state;
     HTTP_CODE m_http_code;
@@ -67,8 +98,10 @@ private:
     std::string m_version;
     /* 请求头 */
     std::string m_host;
-    int m_content_length;
+    size_t m_content_length;
     bool m_linger;
     /* 请求正文 */
     std::string m_content;
 };
+
+#endif

@@ -5,6 +5,10 @@
 #include "../http/HttpRequest.h"
 
 
+HttpRequest::HttpRequest()
+{
+    init();
+}
 
 void HttpRequest::init() 
 {
@@ -69,18 +73,21 @@ HttpRequest::HTTP_CODE HttpRequest::parse(Buffer &buffer)
         case CHECK_STATE_CONTENT:
         {
             ret = parse_content(text);
-            return ret;
-        }
-        default:
+            if (ret == GET_REQUEST)
+                return ret;
+            m_check_state = CHECK_STATE_FINISH;
             break;
         }
-
+        default:
+            return INTERNAL_ERROR;
+        }
     }
+    return NO_REQUEST;
 }
 
 HttpRequest::HTTP_CODE HttpRequest::parse_request_line(const std::string &line)
 {
-    std::regex patten("^([^ ]*) https?:\/\/([^ ]*) HTTP\/1.1$");
+    std::regex patten("^([^ ]*) ([^ ]*) HTTP/1.1$");
     std::smatch subMatch;
     if(std::regex_match(line, subMatch, patten)) 
     {   
@@ -98,19 +105,19 @@ HttpRequest::HTTP_CODE HttpRequest::parse_request_line(const std::string &line)
         }
 
 
-        std::string path = subMatch[2];
-        /* 去处url中ip:port部分 */
-        size_t rootPos = path.find("/");
-        if (rootPos == std::string::npos)
-            return BAD_REQUEST;
-        m_url = m_url.substr(rootPos);
+        // std::string path = subMatch[2];
+        // /* 去处url中ip:port部分 @FIXME 去除https*/
+        // size_t rootPos = path.find("/");
+        // if (rootPos == std::string::npos)
+        //     return BAD_REQUEST;
+        m_url = subMatch[2];
 
         /* 当url为/时，显示判断界面 */
         if (m_url.compare("/") == 0)
         {
             m_url = "/judge.html";
         }
-
+        
         m_version = "HTTP/1.1";
         m_check_state = CHECK_STATE_HEADER;
         return NO_REQUEST;
@@ -170,8 +177,7 @@ HttpRequest::HTTP_CODE HttpRequest::parse_content(const std::string &text)
     if (text.size() >= m_content_length)
     {
         /* POST请求中最后输入的是用户名和密码 */
-        m_content = text;
-        m_check_state = CHECK_STATE_FINISH;
+        m_content = text.substr(0, m_content_length);
         return GET_REQUEST;
     }
 

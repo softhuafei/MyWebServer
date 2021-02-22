@@ -1,3 +1,7 @@
+#ifndef LOCKER_H
+#define LOCKER_H
+
+
 #include <exception>
 #include <semaphore.h>  // sem
 #include <pthread.h>    // pthread_mutex
@@ -121,3 +125,6 @@ public:
 private:
     pthread_cond_t m_cond;
 };
+
+
+#endif
