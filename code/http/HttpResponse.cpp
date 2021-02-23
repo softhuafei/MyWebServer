@@ -34,11 +34,13 @@ HttpResponse::~HttpResponse()
     unmap();
 }
 
-void HttpResponse::init(const std::string &url, bool isKeepAlive, HttpRequest::HTTP_CODE code)
+void HttpResponse::init(const std::string &url, bool isKeepAlive, HttpRequest::HTTP_CODE code,
+                        HttpRequest::METHOD method)
 {
     m_url = url;
     m_linger = isKeepAlive;
     m_http_code = code;
+    m_method = method;
     
     if (m_file_addr)
         unmap();
@@ -51,7 +53,7 @@ void HttpResponse::do_request()
 {
     m_real_file = m_root;
 
-    /* 根据 url 决定要跳转的页面 */
+    // POST 请求，处理登陆/注册
     /* TODO 不同的页面 */
     m_real_file = m_root + m_url;
 

@@ -15,7 +15,8 @@ public:
     HttpResponse();
     ~HttpResponse();
 
-    void init(const std::string &url, bool isKeepAlive, HttpRequest::HTTP_CODE code);
+    void init(const std::string &url, bool isKeepAlive, HttpRequest::HTTP_CODE code,
+                HttpRequest::METHOD method);
 
     bool process_response(Buffer &buff);
 
@@ -40,9 +41,11 @@ private:
 private:
     /* 构造response所需要的信息 */
     HttpRequest::HTTP_CODE m_http_code;
+    HttpRequest::METHOD m_method;
     std::string m_url;
     std::string m_real_file;
     bool m_linger;
+    
 
     /* 保存映射的文件地址 */
     char* m_file_addr; 

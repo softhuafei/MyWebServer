@@ -89,6 +89,8 @@ private:
     HTTP_CODE parse_headers(const std::string &text);
     HTTP_CODE parse_content(const std::string &text);
     
+    HTTP_CODE parse_url();
+
     CHECK_STATE m_check_state;
     HTTP_CODE m_http_code;
 

@@ -178,8 +178,31 @@ HttpRequest::HTTP_CODE HttpRequest::parse_content(const std::string &text)
     {
         /* POST请求中最后输入的是用户名和密码 */
         m_content = text.substr(0, m_content_length);
+
+
         return GET_REQUEST;
     }
 
     return NO_REQUEST;
+}
+
+HttpRequest::HTTP_CODE HttpRequest::parse_url()
+{
+    // POST 请求，处理登陆/注册
+    if (m_method == POST && (m_url[1] == '2' || m_url[1] == '3'))
+    {
+        // 从请求体中提取出用户名和密码
+        // user=123&passwd=123
+        size_t pos = m_content.find('&');
+        std::string user = m_content.substr(5, pos-5);
+        std::string passwd = m_content.substr(pos+1);
+        std::cout << "user:" << user << "passwd "<< passwd << std::endl;
+        
+        
+    }
+
+    /* TODO 不同的页面 */
+    m_real_file = m_root + m_url;
+
+
 }

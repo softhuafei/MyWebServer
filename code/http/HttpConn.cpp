@@ -65,7 +65,7 @@ void HttpConn::process()
 
     // std::cout << "Init response" << std::endl;
     /* 初始化HttpResponse， 设置所需信息*/
-    m_response.init(m_request.getUrl(), m_request.isKeepAlive(), ret);
+    m_response.init(m_request.getUrl(), m_request.isKeepAlive(), ret, m_request.getMethod());
     
     /* 构造响应 */
     // std::cout << "make response" << std::endl;
